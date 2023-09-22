@@ -6,7 +6,6 @@ const urlParts = document.URL.split("/");
 const roomName = urlParts[urlParts.length - 1];
 const ws = new WebSocket(`ws://localhost:3000/chat/${roomName}`);
 
-debugger;
 const name = prompt("Username? (no spaces)");
 
 /** called when connection opens, sends join info to server. */
@@ -31,6 +30,8 @@ ws.onmessage = function (evt) {
     item = $(`<li><i>${msg.text}</i></li>`);
   } else if (msg.type === "chat") {
     item = $(`<li><b>${msg.name}: </b>${msg.text}</li>`);
+  } else if (msg.type === "joke") {
+    item = $(`<li><b>${msg}</li>`);
   } else {
     return console.error(`bad message: ${msg}`);
   }
@@ -64,6 +65,7 @@ $("form").submit(function (evt) {
   }else{
     data = { type: "chat", text: userMessage };
   }
+  console.log("DATA!!!!!!!!!!!!!!!!!!", data)
   ws.send(JSON.stringify(data));
 
   $("#m").val("");

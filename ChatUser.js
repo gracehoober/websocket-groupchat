@@ -1,5 +1,6 @@
 "use strict";
 
+const { json } = require("express");
 /** Functionality related to chatting. */
 
 // Room is an abstraction of a chat channel
@@ -72,9 +73,12 @@ class ChatUser {
    * </code>
    */
 
-  handleMessage(jsonData) {
+  async handleMessage(jsonData) {
+    console.log("JSONDAAT!!!!!!!!!!!!!!!!", jsonData)
     let msg = JSON.parse(jsonData);
+    console.log("msg!!!!!!!!!!!!!!!!!!!!!!", msg)
 
+    if (msg.type === "joke") await this.getJoke();
     if (msg.type === "join") this.handleJoin(msg.name);
     else if (msg.type === "chat") this.handleChat(msg.text);
     else throw new Error(`bad message: ${msg.type}`);
@@ -88,6 +92,21 @@ class ChatUser {
       type: "note",
       text: `${this.name} left ${this.room.name}.`,
     });
+  }
+
+  /** Gets dad joke from API. */
+
+  async getJoke() {
+    const resp = await fetch('https://icanhazdadjoke.com/',
+    {
+      method: 'GET',
+      headers: {
+        "User-Agent": "My Library (https://github.com/username/repo)",
+        "Content-Type": "application/json"
+      }
+    });
+    const joke = await resp.json();
+    this.room.broadcast(joke);
   }
 }
 
