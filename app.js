@@ -36,6 +36,7 @@ app.ws("/chat/:roomName", function (ws, req, next) {
 
     ws.on("message", function (data) {
       try {
+        console.log(data, "is this out message?")
         user.handleMessage(data);
       } catch (err) {
         console.error(err);

@@ -74,12 +74,12 @@ class ChatUser {
    */
 
   async handleMessage(jsonData) {
-    console.log("JSONDAAT!!!!!!!!!!!!!!!!", jsonData)
+    //console.log("JSONDAAT!!!!!!!!!!!!!!!!", jsonData)
     let msg = JSON.parse(jsonData);
-    console.log("msg!!!!!!!!!!!!!!!!!!!!!!", msg)
+    //console.log("msg!!!!!!!!!!!!!!!!!!!!!!", msg)
 
     if (msg.type === "joke") await this.getJoke();
-    if (msg.type === "join") this.handleJoin(msg.name);
+    else if (msg.type === "join") this.handleJoin(msg.name);
     else if (msg.type === "chat") this.handleChat(msg.text);
     else throw new Error(`bad message: ${msg.type}`);
   }
@@ -97,16 +97,19 @@ class ChatUser {
   /** Gets dad joke from API. */
 
   async getJoke() {
+    console.log("got in here")
     const resp = await fetch('https://icanhazdadjoke.com/',
     {
       method: 'GET',
       headers: {
         "User-Agent": "My Library (https://github.com/username/repo)",
-        "Content-Type": "application/json"
+        "Accept": "application/json",
       }
     });
+    //console.log("post fetch", resp)
     const joke = await resp.json();
-    this.room.broadcast(joke);
+    console.log(joke.joke, "back from API")
+    this.room.broadcast({text: joke, type: "joke"});
   }
 }
 
